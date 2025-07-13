@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.backend.finance_tracker.service.JWTService;
+import com.backend.finance_tracker.security.service.JWTService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
