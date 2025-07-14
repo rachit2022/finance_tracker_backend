@@ -1,7 +1,6 @@
 package com.backend.finance_tracker.security.serviceImpl;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -23,7 +22,8 @@ public class JWTServiceImpl implements JWTService {
     @Value("${jwt.secret.key}")
     private String secretKey;
 
-    private String generateToken(UserDetails userDetails) {
+    @Override
+    public String generateToken(UserDetails userDetails) {
         return Jwts.builder().setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() * 1000 * 60 * 24))
@@ -31,6 +31,7 @@ public class JWTServiceImpl implements JWTService {
                 .compact();
     }
 
+    @Override
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -50,4 +51,15 @@ public class JWTServiceImpl implements JWTService {
                 .setSigningKey(getSignKey()).build().parseClaimsJws(token)
                 .getBody();
     }
+
+    @Override
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUserName(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
 }
